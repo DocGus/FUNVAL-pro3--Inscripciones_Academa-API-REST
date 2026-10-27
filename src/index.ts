@@ -1,8 +1,8 @@
 
 import express from "express";
 import type { ErrorRequestHandler, Request, Response } from "express";
-import librosRouter from "./Ejercicios/Ejercicio1";
-import productosRouter from "./Ejercicios/BreakoutRoom1";
+import librosRouter from "./Ejercicios/Eje1";
+import productosRouter from "./Ejercicios/eje4-middleware";
 
 const app = express();
 const PORT = 3000;

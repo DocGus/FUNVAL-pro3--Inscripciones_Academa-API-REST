@@ -30,7 +30,7 @@ import type { Request, Response } from "express";
 // Importamos el router del Ejercicio 1: Biblioteca Digital.
 // Este archivo contiene sus propias rutas CRUD.
 // El router se conectará con la aplicación principal más adelante.
-import librosRouter from "./Ejercicios/Ejercicio1";
+import librosRouter from "./Ejercicios/Eje1";
 
 // ==========================================================
 // 2. PREPARAR EL SERVIDOR
