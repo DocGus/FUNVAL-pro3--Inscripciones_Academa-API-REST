@@ -1,13 +1,15 @@
 
 import express from "express";
-import type { Request, Response } from "express";
+import type { ErrorRequestHandler, Request, Response } from "express";
 import librosRouter from "./Ejercicios/Ejercicio1";
+import productosRouter from "./Ejercicios/BreakoutRoom1";
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 app.use("/api/libros", librosRouter);
+app.use("/api/productos", productosRouter);
 
 interface Estudiante {
   id: number;
@@ -229,6 +231,45 @@ app.delete(
     });
   }
 );
+
+const manejarErrores: ErrorRequestHandler = (error, _req, res, next) => {
+  if (res.headersSent) {
+    next(error);
+    return;
+  }
+
+  const tipoError =
+    typeof error === "object" &&
+    error !== null &&
+    "type" in error &&
+    typeof error.type === "string"
+      ? error.type
+      : undefined;
+
+  if (tipoError === "entity.parse.failed") {
+    res.status(400).json({
+      ok: false,
+      mensaje: "El cuerpo de la solicitud contiene JSON inválido.",
+    });
+    return;
+  }
+
+  if (tipoError === "entity.too.large") {
+    res.status(413).json({
+      ok: false,
+      mensaje: "El cuerpo de la solicitud excede el tamaño permitido.",
+    });
+    return;
+  }
+
+  console.error("Error interno al procesar la solicitud:", error);
+  res.status(500).json({
+    ok: false,
+    mensaje: "Error interno del servidor.",
+  });
+};
+
+app.use(manejarErrores);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en: http://localhost:${PORT}`);
