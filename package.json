@@ -1,6 +1,6 @@
 
 {
-  "name": "funval-pro3--inscripciones-academa-api-rest",
+  "name": "funval-pro3-inscripciones-academia-api-rest",
   "version": "1.0.0",
   "description": "API REST de Inscripciones Académicas",
   "main": "dist/index.js",
