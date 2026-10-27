@@ -1,15 +1,12 @@
 
-// Importa Express y los tipos de solicitud y respuesta para crear y tipar la API.
 import express from "express";
 import type { Request, Response } from "express";
 
-//INICIALIZAR LA APLICACION DE EXPRESS
 const app = express();
 const PORT = 3000;
-// MIDDLEWARE OBLIGATORIO PARA JSON
+
 app.use(express.json());
 
-//BASE DE DATOS FALSA PARA LA PRACTICA DE LA API REST
 interface Estudiante {
   id: number;
   nombre: string;
@@ -30,63 +27,207 @@ const listaEstudiantes: Estudiante[] = [
   { id: 10, nombre: "Camila Vargas", curso: "TypeScript", activo: false },
 ];
 
-//ENDPOINT PARA TRAER A TODOS LOS ESTUDIANTES (LENGHT) (GET)
-app.get("/api/estudiantes", function (req: Request, res: Response) {
-  res.status(200).json({
-    ok: true,
-    mensaje: "Lista de estudiantes de funval",
-    total: listaEstudiantes.length,
-    data: listaEstudiantes,
-  });
-});
+let siguienteId =
+  Math.max(0, ...listaEstudiantes.map((estudiante) => estudiante.id)) + 1;
 
-//ENDPOINT PARA TRAER A UN ESTUDIANTE POR SU ID (GET)
-app.get("/api/estudiantes/:id", function (req: Request, res: Response) {
-  const idBuscando = Number(req.params.id);
-  const estudiantesEncontrado = listaEstudiantes.find(
-    (e) => e.id === idBuscando,
-  );
-  if (!estudiantesEncontrado) {
-    return res.status(404).json({
-      ok: false,
-      mensaje: `el estudiante con id ${idBuscando} NO EXISTE!!!`,
+function validarEstudiante(body: unknown): string | null {
+
+  if (
+    typeof body !== "object" ||
+    body === null ||
+    Array.isArray(body)
+  ) {
+    return "El cuerpo debe ser un objeto JSON.";
+  }
+
+  const datos = body as Record<string, unknown>;
+
+  if (
+    typeof datos.nombre !== "string" ||
+    !datos.nombre.trim()
+  ) {
+    return "El nombre es obligatorio y debe ser texto.";
+  }
+
+  if (
+    typeof datos.curso !== "string" ||
+    !datos.curso.trim()
+  ) {
+    return "El curso es obligatorio y debe ser texto.";
+  }
+
+  if (typeof datos.activo !== "boolean") {
+    return "El campo activo debe ser true o false.";
+  }
+
+  return null;
+}
+
+app.get(
+  "/api/estudiantes",
+  (_req: Request, res: Response) => {
+
+    return res.status(200).json({
+      ok: true,
+      mensaje: "Lista de estudiantes de FUNVAL",
+      total: listaEstudiantes.length,
+      data: listaEstudiantes,
     });
   }
-  res.status(200).json({
-    ok: true,
-    data: estudiantesEncontrado,
-  });
-});
+);
 
-//ENDPOINT PARA CREAR UN NUEVO ESTUDIANTE (POST)
-app.post("/api/estudiantes", function (req: Request, res: Response) {
-  const { nombre, curso, activo } = req.body; //desestructuracion{}
-  /* 
-    req.body={
-      nombre:"kevin",
-      curso:"react",
-      activo:true
+app.get(
+  "/api/estudiantes/:id",
+  (req: Request, res: Response) => {
+
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: "El ID debe ser un número entero positivo.",
+      });
     }
 
-    let nombre = req.body.nombre kevin
-    let curso = req.body.curso  react
-    let activo = req.body.activo  true
-  */
+    const estudiante = listaEstudiantes.find(
+      (e) => e.id === id
+    );
 
-  let nuevoEstudiante: Estudiante = {
-    id: listaEstudiantes.length + 1,
-    nombre,
-    curso,
-    activo,
-  };
-  listaEstudiantes.push(nuevoEstudiante);
-  res.status(201).json({
-    ok: true,
-    mensaje: "estudiante registrado con exito",
-    data: nuevoEstudiante,
-  });
-});
+    if (!estudiante) {
+      return res.status(404).json({
+        ok: false,
+        mensaje: `El estudiante con ID ${id} no existe.`,
+      });
+    }
 
-app.listen(PORT, function () {
+    return res.status(200).json({
+      ok: true,
+      data: estudiante,
+    });
+  }
+);
+
+app.post(
+  "/api/estudiantes",
+  (req: Request, res: Response) => {
+
+    const error = validarEstudiante(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: error,
+      });
+    }
+
+    const { nombre, curso, activo } = req.body as Estudiante;
+
+    const nuevoEstudiante: Estudiante = {
+      id: siguienteId++,
+      nombre: nombre.trim(),
+      curso: curso.trim(),
+      activo,
+    };
+
+    listaEstudiantes.push(nuevoEstudiante);
+
+    return res.status(201).json({
+      ok: true,
+      mensaje: "Estudiante registrado con éxito.",
+      data: nuevoEstudiante,
+    });
+  }
+);
+
+app.put(
+  "/api/estudiantes/:id",
+  (req: Request, res: Response) => {
+
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: "El ID debe ser un número entero positivo.",
+      });
+    }
+
+    const indice = listaEstudiantes.findIndex(
+      (e) => e.id === id
+    );
+
+    if (indice === -1) {
+      return res.status(404).json({
+        ok: false,
+        mensaje: `El estudiante con ID ${id} no existe.`,
+      });
+    }
+
+    const error = validarEstudiante(req.body);
+
+    if (error) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: error,
+      });
+    }
+
+    const { nombre, curso, activo } = req.body as Estudiante;
+
+    const estudianteActualizado: Estudiante = {
+      id,
+      nombre: nombre.trim(),
+      curso: curso.trim(),
+      activo,
+    };
+
+    listaEstudiantes[indice] = estudianteActualizado;
+
+    return res.status(200).json({
+      ok: true,
+      mensaje: "Estudiante actualizado con éxito.",
+      data: estudianteActualizado,
+    });
+  }
+);
+
+app.delete(
+  "/api/estudiantes/:id",
+  (req: Request, res: Response) => {
+
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: "El ID debe ser un número entero positivo.",
+      });
+    }
+
+    const indice = listaEstudiantes.findIndex(
+      (e) => e.id === id
+    );
+
+    if (indice === -1) {
+      return res.status(404).json({
+        ok: false,
+        mensaje: `El estudiante con ID ${id} no existe.`,
+      });
+    }
+
+    const [estudianteEliminado] = listaEstudiantes.splice(
+      indice,
+      1
+    );
+
+    return res.status(200).json({
+      ok: true,
+      mensaje: "Estudiante eliminado con éxito.",
+      data: estudianteEliminado,
+    });
+  }
+);
+
+app.listen(PORT, () => {
   console.log(`Servidor corriendo en: http://localhost:${PORT}`);
 });

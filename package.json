@@ -1,9 +1,10 @@
+
 {
-  "name": "funval-pro3--inscripciones_academa-api-rest",
+  "name": "funval-pro3--inscripciones-academa-api-rest",
   "version": "1.0.0",
+  "description": "API REST de Inscripciones Académicas",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js"
@@ -11,15 +12,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "API REST de Inscripciones Academicas",
   "type": "commonjs",
+  "dependencies": {
+    "express": "^5.3.0"
+  },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.5",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
-  },
-  "dependencies": {
-    "express": "^5.3.0"
   }
 }
