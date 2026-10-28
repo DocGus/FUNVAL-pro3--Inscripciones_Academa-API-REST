@@ -3,8 +3,11 @@ import express from "express";
 import type { ErrorRequestHandler, Request, Response } from "express";
 
 // Conservamos las rutas que ya habías separado en otros archivos.
-import librosRouter from "./Ejercicios/Eje1";
+import librosRouter from "./Ejercicios/Eje1-libreria";
 import productosRouter from "./Ejercicios/eje4-middleware";
+import vehiculosRouter from "./Ejercicios/Eje2-flota_autos";
+import pedidosRouter from "./Ejercicios/Eje3-pedidos_comida";
+
 
 const app = express();
 const PORT = 3000;
@@ -17,6 +20,8 @@ app.use(express.json());
 // Rutas independientes que ya existían en el proyecto.
 app.use("/api/libros", librosRouter);
 app.use("/api/productos", productosRouter);
+app.use("/api/vehiculos", vehiculosRouter);
+app.use("/api/pedidos", pedidosRouter);
 
 // MODELO DE ESTUDIANTE
 // CAMBIO: sustituimos "curso" y "activo" por "email" y "bootcamp".

@@ -21,52 +21,55 @@ El objetivo es mantener cada ejercicio organizado en su propio archivo y permiti
 ```text
 .
 ├── README.md
+├── package.json
+├── tsconfig.json
 └── src/
     ├── index.ts
-    ├── Index_comentado.ts
+    ├── Index1_lunes.ts
+    ├── Index_comentado_lunes.ts
     └── Ejercicios/
-        ├── Ejercicio1.ts
-        ├── Ejercicio2.ts
-        ├── Ejercicio3.ts
-        ├── BreakoutRoom1.ts
-        ├── Guia.md
-        └── Guia2.md
+        ├── Eje1-libreria.ts
+        ├── Eje2-flota_autos.ts
+        ├── Eje3-pedidos_comida.ts
+        ├── eje4-middleware.ts
+        └── Guia.md
 ```
 
 ### Responsabilidad de los archivos
 
 - **`src/index.ts`**: punto de entrada de la aplicación. Configura Express, define las rutas de estudiantes y registra los módulos adicionales.
-- **`src/Index_comentado.ts`**: versión comentada del ejercicio principal, utilizada como material de estudio.
-- **`src/Ejercicios/Ejercicio1.ts`**: API REST para gestionar una biblioteca digital.
-- **`src/Ejercicios/Ejercicio2.ts`**: espacio destinado al ejercicio de gestión de vehículos.
-- **`src/Ejercicios/Ejercicio3.ts`**: espacio destinado al ejercicio de gestión de pedidos.
-- **`src/Ejercicios/BreakoutRoom1.ts`**: API de productos que reúne la validación de datos y el control de roles para los borrados.
+- **`src/Index_comentado_lunes.ts`**: versión comentada del ejercicio principal, utilizada como material de estudio.
+- **`src/Ejercicios/Eje1-libreria.ts`**: API REST para gestionar una biblioteca digital.
+- **`src/Ejercicios/Eje2-flota_autos.ts`**: API REST para gestionar vehículos de una flota.
+- **`src/Ejercicios/Eje3-pedidos_comida.ts`**: API REST para gestionar pedidos de comida.
+- **`src/Ejercicios/eje4-middleware.ts`**: API de productos con validación de datos y control de roles para los borrados.
 - **`src/Ejercicios/Guia.md`**: guía de referencia para los ejercicios.
-- **`src/Ejercicios/Guia2.md`**: guía del taller de middlewares en Express.
 
 ## Integración de los ejercicios
 
 Los ejercicios se incorporan al proyecto mediante el mecanismo de **enrutamiento modular de Express**.
 
-El archivo principal importa los routers de la biblioteca y de productos:
+El archivo principal importa los routers de cada ejercicio:
 
 ```typescript
-import librosRouter from "./Ejercicios/Ejercicio1";
-import productosRouter from "./Ejercicios/BreakoutRoom1";
+import librosRouter from "./Ejercicios/Eje1-libreria";
+import vehiculosRouter from "./Ejercicios/Eje2-flota_autos";
+import pedidosRouter from "./Ejercicios/Eje3-pedidos_comida";
+import productosRouter from "./Ejercicios/eje4-middleware";
 ```
 
 Después los registra en la aplicación:
 
 ```typescript
 app.use("/api/libros", librosRouter);
+app.use("/api/vehiculos", vehiculosRouter);
+app.use("/api/pedidos", pedidosRouter);
 app.use("/api/productos", productosRouter);
 ```
 
-De esta manera, las rutas de `Ejercicio1.ts` quedan disponibles bajo `/api/libros`, y las de `BreakoutRoom1.ts` bajo `/api/productos`.
+La API de estudiantes está definida directamente en `src/index.ts`; los demás endpoints quedan disponibles bajo el prefijo indicado en cada llamada a `app.use`.
 
-La API de estudiantes conserva sus rutas originales, definidas directamente en `index.ts`.
-
-**Ventaja:** ambas funcionalidades comparten el mismo servidor, pero mantienen separada su lógica de negocio y sus endpoints.
+**Ventaja:** todas las funcionalidades comparten el mismo servidor, pero mantienen separada la lógica de cada ejercicio y sus endpoints.
 
 ## Ejercicio principal: Inscripciones académicas
 
@@ -80,7 +83,7 @@ El sistema permite gestionar estudiantes mediante operaciones CRUD.
 | PUT | `/api/estudiantes/:id` | Actualizar estudiante |
 | DELETE | `/api/estudiantes/:id` | Eliminar estudiante |
 
-Los registros se almacenan temporalmente en un arreglo en memoria.
+Cada estudiante contiene `id`, `nombre`, `email` y `bootcamp`. El `id` se genera automáticamente y los registros se almacenan temporalmente en un arreglo en memoria, inicialmente vacío. Para crear o actualizar un estudiante, `nombre`, `email` y `bootcamp` son obligatorios y deben ser textos no vacíos.
 
 ## Ejercicio 1: Biblioteca digital
 
@@ -102,9 +105,37 @@ La API administra un catálogo de libros con los siguientes campos:
 
 La biblioteca utiliza un arreglo en memoria con tres registros iniciales.
 
+## Ejercicio 2: Gestión de flota de vehículos
+
+La API administra vehículos con los campos `id`, `placa`, `modelo`, `kilometraje` y `estado`. El estado puede ser `activo` o `mantenimiento`. Inicia con tres vehículos de ejemplo y almacena los cambios en memoria.
+
+| Método | Endpoint | Función |
+|---|---|---|
+| GET | `/api/vehiculos` | Listar vehículos |
+| GET | `/api/vehiculos/:id` | Consultar vehículo por ID |
+| POST | `/api/vehiculos` | Registrar vehículo |
+| PUT | `/api/vehiculos/:id` | Reemplazar los datos de un vehículo |
+| DELETE | `/api/vehiculos/:id` | Dar de baja un vehículo |
+
+Para POST y PUT, enviar los campos `placa`, `modelo`, `kilometraje` y `estado` en el cuerpo JSON.
+
+## Ejercicio 3: Gestión de pedidos de comida
+
+La API administra pedidos con los campos `id`, `cliente`, `platillo`, `total` y `entregado`. Inicia con tres pedidos de ejemplo y almacena los cambios en memoria.
+
+| Método | Endpoint | Función |
+|---|---|---|
+| GET | `/api/pedidos` | Listar pedidos |
+| GET | `/api/pedidos/:id` | Consultar pedido por ID |
+| POST | `/api/pedidos` | Crear pedido |
+| PUT | `/api/pedidos/:id` | Reemplazar los datos de un pedido |
+| DELETE | `/api/pedidos/:id` | Cancelar pedido |
+
+Para POST y PUT, enviar los campos `cliente`, `platillo`, `total` y `entregado` en el cuerpo JSON.
+
 ## Taller: Middlewares y gestión de productos
 
-El archivo `src/Ejercicios/BreakoutRoom1.ts` exporta un router para gestionar productos. Cada producto tiene los siguientes campos:
+El archivo `src/Ejercicios/eje4-middleware.ts` exporta un router para gestionar productos. Cada producto tiene los siguientes campos:
 
 - `id`: identificador numérico generado por la API.
 - `nombre`: nombre del producto.
@@ -150,6 +181,13 @@ Para iniciar la aplicación en modo desarrollo:
 npm run dev
 ```
 
+Para compilar TypeScript y ejecutar la versión compilada:
+
+```bash
+npm run build
+npm start
+```
+
 El servidor utiliza el puerto `3000`.
 
 Dirección base:
@@ -166,10 +204,9 @@ Con el servidor en ejecución, abrir una segunda terminal.
 
 ### 1. Comprobar la API de estudiantes
 
-En una terminal use: npm run dev
-Despues copie y pegue en otra terminal la consulta que quiere realizar
+Inicia el servidor con `npm run dev` y ejecuta las consultas desde otra terminal.
 
-Consultar lista completa de estudiante:
+Consultar la lista completa de estudiantes:
 
 ```bash
 curl -i http://localhost:3000/api/estudiantes
@@ -181,12 +218,12 @@ Consultar un estudiante específico:
 curl -i http://localhost:3000/api/estudiantes/1
 ```
 
-Registrar un estudiante. Los campos `nombre`, `curso` y `activo` son obligatorios:
+Registrar un estudiante. Los campos `nombre`, `email` y `bootcamp` son obligatorios:
 
 ```bash
 curl -i -X POST http://localhost:3000/api/estudiantes \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Gustavo Andres","curso":"Node.js","activo":true}'
+  -d '{"nombre":"Gustavo Andres","email":"gus@example.com","bootcamp":"Node.js"}'
 ```
 
 Actualizar un estudiante existente (en este ejemplo, el ID `1`). El PUT requiere enviar los tres campos:
@@ -194,7 +231,7 @@ Actualizar un estudiante existente (en este ejemplo, el ID `1`). El PUT requiere
 ```bash
 curl -i -X PUT http://localhost:3000/api/estudiantes/1 \
   -H "Content-Type: application/json" \
-  -d '{"nombre":"Carlos Mendoza","curso":"TypeScript","activo":true}'
+  -d '{"nombre":"Carlos Mendoza","email":"carlos@example.com","bootcamp":"TypeScript"}'
 ```
 
 ### 2. Comprobar la API de biblioteca
@@ -226,6 +263,38 @@ curl -i -X PUT http://localhost:3000/api/libros/1 \
 ```
 
 Una respuesta `HTTP 200 OK` confirma que una consulta GET o una actualización PUT fue atendida correctamente. Las operaciones POST exitosas responden `HTTP 201 Created`. El endpoint DELETE también está disponible para probar la eliminación de registros.
+
+### 3. Comprobar las APIs de vehículos y pedidos
+
+Listar vehículos y consultar un vehículo por ID:
+
+```bash
+curl -i http://localhost:3000/api/vehiculos
+curl -i http://localhost:3000/api/vehiculos/1
+```
+
+Registrar un vehículo:
+
+```bash
+curl -i -X POST http://localhost:3000/api/vehiculos \
+  -H "Content-Type: application/json" \
+  -d '{"placa":"GUS-123","modelo":"Toyota Hiace","kilometraje":12000,"estado":"activo"}'
+```
+
+Listar pedidos y consultar un pedido por ID:
+
+```bash
+curl -i http://localhost:3000/api/pedidos
+curl -i http://localhost:3000/api/pedidos/1
+```
+
+Crear un pedido:
+
+```bash
+curl -i -X POST http://localhost:3000/api/pedidos \
+  -H "Content-Type: application/json" \
+  -d '{"cliente":"Gustavo Andres","platillo":"Hamburguesa clásica","total":120,"entregado":false}'
+```
 
 ## Pruebas de los Breakout Rooms: Middlewares en Express
 
@@ -446,8 +515,8 @@ Si la compilación termina sin errores, TypeScript habrá generado los archivos 
 
 - Los ejercicios utilizan arreglos en memoria, no una base de datos persistente.
 - Los cambios realizados mediante POST, PUT, PATCH y DELETE se pierden cuando se reinicia el servidor.
-- Los ejercicios de vehículos y pedidos deberán integrarse y probarse cuando su implementación esté terminada.
-- `Index_comentado.ts` es material de referencia; el servidor de desarrollo ejecuta `src/index.ts`.
+- Los ejercicios de vehículos y pedidos ya están integrados bajo `/api/vehiculos` y `/api/pedidos`.
+- `Index_comentado_lunes.ts` es material de referencia; el servidor de desarrollo ejecuta `src/index.ts`.
 
 ## Objetivo de aprendizaje
 
