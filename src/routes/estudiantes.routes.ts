@@ -57,13 +57,16 @@ function validarEstudiante(body: unknown): string | null {
 
 // GET /api/estudiantes
 // GET /api/estudiantes?bootcamp=Frontend
-// Devuelve todos los estudiantes o filtra por el bootcamp indicado.
+// Devuelve todos los estudiantes o filtra por bootcamp.
 estudiantesRouter.get(
   "/",
   (req: Request, res: Response) => {
+    // #swagger.tags = ['Estudiantes']
+    // #swagger.summary = 'Obtener estudiantes'
+    // #swagger.description = 'Devuelve todos los estudiantes registrados. Permite filtrar por nombre de bootcamp.'
+    // #swagger.parameters['bootcamp'] = { in: 'query', description: 'Nombre del bootcamp para filtrar', type: 'string' }
     const bootcamp = req.query.bootcamp;
 
-    // Aplicamos el filtro solo si recibimos bootcamp como texto.
     if (typeof bootcamp === "string") {
       const estudiantesFiltrados = listaEstudiantes.filter(
         (estudiante) =>
@@ -78,7 +81,6 @@ estudiantesRouter.get(
       });
     }
 
-    // Si no hay parámetro, devolvemos la lista completa.
     return res.status(200).json({
       ok: true,
       mensaje: "Lista de estudiantes de FUNVAL",
@@ -89,10 +91,14 @@ estudiantesRouter.get(
 );
 
 // GET /api/estudiantes/:id
-// Busca un estudiante por su ID y devuelve 404 si no existe.
+// Busca un estudiante por su ID.
 estudiantesRouter.get(
   "/:id",
   (req: Request, res: Response) => {
+    // #swagger.tags = ['Estudiantes']
+    // #swagger.summary = 'Obtener estudiante por ID'
+    // #swagger.description = 'Busca y devuelve un estudiante utilizando su ID.'
+    // #swagger.parameters['id'] = { in: 'path', description: 'ID del estudiante', required: true, type: 'integer' }
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
@@ -121,10 +127,23 @@ estudiantesRouter.get(
 );
 
 // POST /api/estudiantes
-// Registra un estudiante y responde 201 Created.
+// Registra un estudiante.
 estudiantesRouter.post(
   "/",
   (req: Request, res: Response) => {
+    // #swagger.tags = ['Estudiantes']
+    // #swagger.summary = 'Registrar estudiante'
+    // #swagger.description = 'Registra un nuevo estudiante.'
+    /* #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Datos del estudiante',
+      required: true,
+      schema: {
+        nombre: 'Juan Pérez',
+        email: 'juan@example.com',
+        bootcamp: 'Frontend'
+      }
+    } */
     const error = validarEstudiante(req.body);
 
     if (error) {
@@ -154,10 +173,24 @@ estudiantesRouter.post(
 );
 
 // PUT /api/estudiantes/:id
-// Actualiza todos los campos del estudiante indicado.
+// Actualiza todos los campos del estudiante.
 estudiantesRouter.put(
   "/:id",
   (req: Request, res: Response) => {
+    // #swagger.tags = ['Estudiantes']
+    // #swagger.summary = 'Actualizar estudiante'
+    // #swagger.description = 'Actualiza los datos de un estudiante existente.'
+    // #swagger.parameters['id'] = { in: 'path', description: 'ID del estudiante', required: true, type: 'integer' }
+    /* #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Datos actualizados del estudiante',
+      required: true,
+      schema: {
+        nombre: 'Juan Pérez',
+        email: 'juan@example.com',
+        bootcamp: 'Backend'
+      }
+    } */
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {
@@ -211,6 +244,10 @@ estudiantesRouter.put(
 estudiantesRouter.delete(
   "/:id",
   (req: Request, res: Response) => {
+    // #swagger.tags = ['Estudiantes']
+    // #swagger.summary = 'Eliminar estudiante'
+    // #swagger.description = 'Elimina un estudiante utilizando su ID.'
+    // #swagger.parameters['id'] = { in: 'path', description: 'ID del estudiante', required: true, type: 'integer' }
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id) || id <= 0) {

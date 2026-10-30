@@ -8,7 +8,8 @@ import productosRouter from "./Ejercicios/eje4-middleware";
 import vehiculosRouter from "./Ejercicios/Eje2-flota_autos";
 import pedidosRouter from "./Ejercicios/Eje3-pedidos_comida";
 import estudiantesRouter from "./routes/estudiantes.routes";
-
+import swaggerUi from "swagger-ui-express";
+import swaggerOutput from "../swagger_output.json";
 
 const app = express();
 const PORT = 3000;
@@ -24,6 +25,8 @@ app.use("/api/productos", productosRouter);
 app.use("/api/vehiculos", vehiculosRouter);
 app.use("/api/pedidos", pedidosRouter);
 app.use("/api/estudiantes", estudiantesRouter);
+// DOCUMENTACIÓN SWAGGER
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
 // MIDDLEWARE GLOBAL DE ERRORES
 // Debe registrarse después de las rutas para recibir los errores que se propaguen.

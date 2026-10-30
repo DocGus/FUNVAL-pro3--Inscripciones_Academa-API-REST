@@ -1,4 +1,3 @@
-
 {
   "name": "funval-pro3-inscripciones-academia-api-rest",
   "version": "1.0.0",
@@ -7,18 +6,22 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "swagger": "tsx src/swagger.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "express": "^5.3.0"
+    "express": "^5.3.0",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.5",
+    "@types/swagger-ui-express": "^4.1.8",
+    "swagger-autogen": "^2.23.7",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   }
